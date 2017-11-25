@@ -11,7 +11,7 @@ python3 -m pip install -U discord.py
 Make sure to select 'create bot user' towards the bottom of the configuration page
 
 3) Copy the bot token and paste it into the bottom of the python script:
-```
+```py
 client.run('TOKEN')
 ```
 
@@ -22,7 +22,8 @@ https://discordapp.com/oauth2/authorize/?permissions=8&scope=bot&client_id=YOUR_
 
 ## Commands
 Current list of bot commands
-| Command          | Function      | Permissions |
-| ---------------- | ------------- | ----------- |
-| !setchat         | Saves the default chat for the server | Can only be run by the server owner | 
-| !russianroulette | Randomly kicks a member from a voice channel | Any member in a voice channel (limited to every 60 seconds) |
+
+| Command | Function | Permissions |
+| ------ | ---- | ---- |
+| !setchat | Saves the default chat for the server | Can only be run by the server owner | 
+| !russianroulette | Randomly kicks a member from a voice channel | Any member in a voice channel, limited to every 60 seconds |
