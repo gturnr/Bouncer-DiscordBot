@@ -19,3 +19,10 @@ client.run('TOKEN')
 https://discordapp.com/oauth2/authorize/?permissions=8&scope=bot&client_id=YOUR_CLIENT_ID_HERE
 
 5) Finally append the bot role so it is above all the roles you want it to manage and give it administrator permissions.
+
+## Commands
+Current list of bot commands
+| Command          | Function      | Permissions |
+| ---------------- | ------------- | ----------- |
+| !setchat         | Saves the default chat for the server | Can only be run by the server owner | 
+| !russianroulette | Randomly kicks a member from a voice channel | Any member in a voice channel (limited to every 60 seconds) |
