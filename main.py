@@ -162,6 +162,18 @@ async def on_message(message):
         else:
             await client.send_message(message.channel, ("Please wait before running this command again!"))
 
+    if message.content.startswith('!update'):
+        print(message.author.id)
+        if str(message.author.id) == '158639538468683776':
+            await client.send_message(message.channel, ("Handing over to update script..."))
+            try:
+                os.system('python update.py')
+                exit()
+            except:
+               await client.send_message(message.channel, ("Error, could not run update script"))
+
+
+
 
 @client.event
 async def on_server_join(server): #function to run when the bot joins a new server
@@ -172,4 +184,4 @@ async def on_server_join(server): #function to run when the bot joins a new serv
                 break
 
 client.loop.create_task(titleUpdater()) #creates a task to update the 'playing' status
-client.run('TOKEN') #runs the client using the Discord bot token 
+client.run('MzgyODMyMTY5MTM2OTQ3MjAw.DPbbwg.bYdy8x4wjPfHniaAmA1V_EgKlTE') #runs the client using the Discord bot token TOKEN
