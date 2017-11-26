@@ -16,9 +16,6 @@ try:
 
 except:
     print('pull failed. Reverting to current version')
-    log = open('updatelog.txt', 'w')
-    log.write('updated failed')
-    log.close()
     os.system('python main.py')
     exit()
 
@@ -29,11 +26,8 @@ os.rename('main.py', 'revisions/old.py')
 updater = open('main.py', 'w')
 updater.write(text)
 updater.close()
-
-log = open('updatelog.txt', 'w')
-log.write('updated successfully')
-log.close()
 time.sleep(2)
 
 
 os.system('python main.py')
+exit()

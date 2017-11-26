@@ -171,6 +171,8 @@ async def on_message(message):
                 exit()
             except:
                await client.send_message(message.channel, ("Error, could not run update script"))
+		else:
+			await client.send_message(message.channel, ("You are not my father..."))
 
 
 
