@@ -10,6 +10,12 @@ def playingStatus(): #function to return the number of servers that the bot is c
     numOfServers = len(client.servers)
     return(str(numOfServers))
 
+def getAuth():
+    file = open('key.txt')
+    key = file.readline()
+    file.close()
+    return key
+
 def getServerChat(server): #function to recall the preffered server channel from local file storage
     try:
         serverConfig = open('config/' + str(server.id), 'r') #loads the server configuration file
@@ -186,4 +192,4 @@ async def on_server_join(server): #function to run when the bot joins a new serv
                 break
 
 client.loop.create_task(titleUpdater()) #creates a task to update the 'playing' status
-client.run('MzgyODMyMTY5MTM2OTQ3MjAw.DPbbwg.bYdy8x4wjPfHniaAmA1V_EgKlTE') #runs the client using the Discord bot token TOKEN
+client.run(getAuth()) #runs the client using the Discord bot token in the file 'key.txt'
