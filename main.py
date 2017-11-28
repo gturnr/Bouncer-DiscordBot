@@ -1,5 +1,6 @@
 #!python3.6
 import discord, asyncio, os, ast, random, time
+import dbtools
 
 client = discord.Client() #creates the Discord client
 
@@ -10,18 +11,19 @@ def playingStatus(): #function to return the number of servers that the bot is c
     numOfServers = len(client.servers)
     return(str(numOfServers))
 
-def getAuth():
-    file = open('key.txt')
-    key = file.readline()
-    file.close()
-    return key
+def getAuth(): #opens a text file and loads the disocrd private key from it
+    try:
+        file = open('key.txt')
+        key = file.readline()
+        file.close()
+        return key
+    except: #if the file could not be opened
+        print('Failed to load key file... create a text file called "key.txt" with your auth key')
+        exit()
 
 def getServerChat(server): #function to recall the preffered server channel from local file storage
     try:
-        serverConfig = open('config/' + str(server.id), 'r') #loads the server configuration file
-        channelID = serverConfig.readline()
-        serverConfig.close() #closes the text file
-
+        channelID = dbtools.getServerConfig(int(server.id))
         for pos, channel in enumerate(server.channels): #NEEDS CLEANING UP. gets the correct channel object from the channel id
             if str(channel.id) == str(channelID):
                 return channel
@@ -33,7 +35,7 @@ async def titleUpdater(): #function to update the 'playing' variable of the bot 
     while not client.is_closed:
         await client.wait_until_ready()
         await client.change_presence(game=discord.Game(name='Keeping ' + playingStatus() + ' server(s) in check'))
-        await asyncio.sleep(120)
+        await asyncio.sleep(120) #X value here
 
 @client.event
 async def on_ready(): #function to output the client name and id upon successful connection to Discord
@@ -54,7 +56,9 @@ async def on_member_remove(member): #function to run when a member keaves or is 
         if str(role) != '@everyone': #ignores the role @everyone as this does not require reassignment later on
             strRoles.append(str(role.id))
 
-    serverID = str(member.server.id) #gets the server id of the member 
+    serverID = str(member.server.id) #gets the server id of the member
+
+
     if not os.path.exists('servers/' + serverID): #checks if a directory already exists for the server, if not it will create a new one
         os.makedirs('servers/' + serverID)
 
@@ -62,7 +66,7 @@ async def on_member_remove(member): #function to run when a member keaves or is 
     fileExport.write((nickname + '\n' + str(strRoles)).encode('UTF-8')) #outputs the nickname and list of roles to the file, using UTF-8 encoding for speciaist characters
     fileExport.close() #closes the file
 
-    channel = getServerChat(member.server) #calls getServerChat function to return the perffered server channel
+    channel = getServerChat(member.server) #calls getServerChat function to return the preferred server channel
     try: #will attempt to send the following messages (assuming channel does not just return Null)
         await client.send_message(channel, ('Member ' + member.name + ' has left the server... configuration successfully backed up.')) ##outputs confirmation of backup
         await client.send_file(channel, 'bye.gif') #uploads a .gif file to the channel
@@ -124,9 +128,7 @@ async def on_message(message):
 
     if message.content.startswith('!setchat'): #if the server owner is trying to set the bot default chat
         if message.author == message.server.owner: #checks if the message is from the server owner
-            serverConfig = open('config/' + message.server.id, 'w') #writes the preffered channel id to a server config file
-            serverConfig.write(message.channel.id)
-            serverConfig.close()
+            dbtools.writeServerConfig(int(message.server.id), int(message.channel.id))
             await client.send_message(message.channel, ('Default text chat saved!')) #outputs confirmation to the chat
 
         else:
@@ -177,8 +179,8 @@ async def on_message(message):
                 exit()
             except:
                await client.send_message(message.channel, ("Error, could not run update script"))
-		else:
-			await client.send_message(message.channel, ("You are not my father..."))
+        else:
+            await client.send_message(message.channel, ("You are not my father..."))
 
 
 
