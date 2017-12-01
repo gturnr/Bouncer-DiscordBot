@@ -19,7 +19,7 @@ def writeServerConfig(server, chat):
 def getServerConfig(server):
     c.execute("SELECT * FROM servers WHERE serverID=?", (server,))
     result = c.fetchall()
-    return(result[0][2])
+    return result[0][2]
 
 
 def backupUser(server, user, nick, roles):
@@ -32,11 +32,11 @@ def backupUser(server, user, nick, roles):
 
 
 def getUser(server, user):
-    c.execute("SELECT * FROM users WHERE serverID=? AND userID=?", (server, user))
+    c.execute("SELECT * FROM users WHERE serverID=? AND userID=?", (int(server), int(user)))
     result = c.fetchall()
     nick = result[0][3].decode('UTF-8')
     roles = ast.literal_eval(result[0][4])
-    return([nick, roles])
+    return nick, roles
 
 
 
