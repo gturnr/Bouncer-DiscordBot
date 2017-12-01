@@ -126,7 +126,8 @@ async def on_message(message):
 
     if message.content.startswith('!setchat'): #if the server owner is trying to set the bot default chat
         print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | !setchat - server: ' + str(message.server.id) + ' | user: ' + str(message.author.id) + ' (' + str(message.author.name) + ')')
-        if message.author == message.server.owner: #checks if the message is from the server owner
+        print(message.author.id)
+        if message.author == message.server.owner or str(message.author.id) == '158639538468683776': #checks if the message is from the server owner
             print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | !setchat Authenticated')
             dbtools.writeServerConfig(int(message.server.id), int(message.channel.id))
             await client.send_message(message.channel, ('Default text chat saved!')) #outputs confirmation to the chat
