@@ -1,6 +1,7 @@
 #!python3.6
 import discord, asyncio, os, ast, random, time
 import dbtools
+from time import gmtime, strftime
 
 client = discord.Client() #creates the Discord client
 
@@ -31,10 +32,8 @@ def getServerChat(server): #function to recall the preffered server channel from
             if str(channel.id) == str(channelID):
                 return channel
 
-    except IndexError:
-        print('Server not yet configured')
     except :
-        print('Unknown db error')
+        pass
 
     for channel in server.channels: #backup system if channel not yet set, returns first text channel in server (usually the oldest)
         if str(channel.type) == 'text':
@@ -58,6 +57,7 @@ async def on_ready(): #function to output the client name and id upon successful
 
 @client.event
 async def on_member_remove(member): #function to run when a member keaves or is removed from a server
+    print(strftime("%Y-%m-%d %H:%M:%S", gmtime())+ ' | member: ' + str(member.id) + ' (' + str(member.name) + ') left server: ' + str(member.server.id))
     if member == client.user:
         return
 
@@ -71,39 +71,27 @@ async def on_member_remove(member): #function to run when a member keaves or is 
 
     dbtools.backupUser(server_id, member.id, nickname, strRoles)
 
-    '''if not os.path.exists('servers/' + server_id): #checks if a directory already exists for the server, if not it will create a new one
-        os.makedirs('servers/' + server_id)
-
-    fileExport = open('servers/' + server_id + '/' + member.id, 'wb') #opens a new file in the sever directory for the member (binary for nicknames)
-    fileExport.write((nickname + '\n' + str(strRoles)).encode('UTF-8')) #outputs the nickname and list of roles to the file, using UTF-8 encoding for speciaist characters
-    fileExport.close() #closes the file'''
-
     channel = getServerChat(member.server) #calls getServerChat function to return the preferred server channel
     await client.send_message(channel, ('Member ' + member.name + ' has left the server... configuration successfully backed up.')) ##outputs confirmation of backup
     await client.send_file(channel, 'bye.gif') #uploads a .gif file to the channel
+    print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | member: ' + str(member.id) + ' (' + str(member.name) + ') successfully backed up')
 
 
 @client.event
 async def on_member_join(member): #function run upon a new user joining a server
+    print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | new member: ' + str(member.id) + ' (' + str(member.name) + ') joined server: ' + str(member.server.id))
     if member == client.user == True:
         return
 
     channel = getServerChat(member.server)
     await client.send_message(channel, ('Welcome ' + member.mention + ' to the server!')) #welcome greating to the new member
 
-    #try: #will attempt to load member details
+    try: #will attempt to load member details
+        nickname, roles = dbtools.getUser(member.server.id, member.id)
 
-    nickname, roles = dbtools.getUser(member.server.id, member.id)
-    print(nickname)
-
-    '''
-        details = open('servers/' + member.server.id + '/' + member.id, 'rb') #opens the relevant server member config file
-        nickname = details.readline().decode('UTF-8') #loads the nickname (retaining any characters or symbols) 
-        roles = ast.literal_eval(details.readline().decode('UTF-8')) #loads the string representation of the roles list and uses ast to transform back into a list type
-        details.close()'''
-
-    #except: #if there were no saved member config then the function exits
-     #   return
+    except: #if there were no saved member config then the function exits
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | No saved details for new user')
+        return
 
     await client.change_nickname(member, nickname) #changes the member nickname
     added_roles = [] #list for successful roles
@@ -122,14 +110,13 @@ async def on_member_join(member): #function run upon a new user joining a server
     failed_roles_str = ', '.join(map(str, failed_roles))
     added_roles_str = ', '.join(map(str, added_roles))
 
-    #os.remove('servers/' + member.server.id + '/' + member.id) #delete member file
-
     if len(added_roles) != 0: #if there is at least one entry in the list
         await client.send_message(channel, ('Member ' + member.name + ' has been reassigned roles: ' + added_roles_str)) #outputs to the chat the roles that have been reassigned
 
     if len(failed_roles) != 0 :#if there is at least one entry in the list
         await client.send_message(channel, ('Please be aware! The following roles could not be reassigned: ' + failed_roles_str)) #outputs to the chat the roles that could not be reassigned (usually permission related issues)
 
+    print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | reassigned member: ' + str(member.id) + ' (' + str(member.name) + ') with saved details...')
 
 @client.event
 async def on_message(message):
@@ -138,17 +125,21 @@ async def on_message(message):
         return
 
     if message.content.startswith('!setchat'): #if the server owner is trying to set the bot default chat
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | !setchat - server: ' + str(message.server.id) + ' | user: ' + str(message.author.id) + ' (' + str(message.author.name) + ')')
         if message.author == message.server.owner: #checks if the message is from the server owner
+            print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | !setchat Authenticated')
             dbtools.writeServerConfig(int(message.server.id), int(message.channel.id))
             await client.send_message(message.channel, ('Default text chat saved!')) #outputs confirmation to the chat
 
         else:
+            print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | !setchat denied...')
             await client.send_message(message.channel, ('Tsk Tsk! You need to be the owner to run this command!')) #outputs error (permissions)
 
     #russian roulette game. Will identify the voice channel of the member (host) who sent the message, and all other members in the call. It will then randomly select a 
     #member in the call and kick them (as well as generating an invite and sending it to the kicked member). This also invokes the backup/restore feature of the bot.
     #An anti-spam function has been included - the feature can only be called every X seconds
     if message.content.startswith('!russianroulette'):
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | !russianroulette - server: ' + str(message.server.id) + ' | user: ' + str(message.author.id) + ' (' + str(message.author.name) + ')')
         global spam_time
         run_time = time.time()
         difference  = run_time - spam_time
@@ -182,7 +173,7 @@ async def on_message(message):
             await client.send_message(message.channel, ("Please wait before running this command again!"))
 
     if message.content.startswith('!update'):
-        print(message.author.id)
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | !update - server: ' + str(message.server.id) + ' | user: ' + str(message.author.id) + ' (' + str(message.author.name) + ')')
         if str(message.author.id) == '158639538468683776':
             await client.send_message(message.channel, ("Handing over to update script..."))
             try:
@@ -194,15 +185,26 @@ async def on_message(message):
             await client.send_message(message.channel, ("You are not my father..."))
 
     if message.content.startswith('!testchat'):
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | !testchat - server: ' + str(message.server.id) + ' | user: ' + str(message.author.id) + ' (' + str(message.author.name) + ')')
         channel = getServerChat(message.server)
         await client.send_message(channel, ('All good'))
 
 
+
 @client.event
 async def on_server_join(server): #function to run when the bot joins a new server
+    print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | Joined server: ' + str(message.server.id))
     channel = getServerChat(server)
     await client.send_message(channel, ('Hi there! My name is kickbot and I manage user roles and nicknames, I can restore these details when someone mysteriously goes missing ;) Here is the deal - to set me up edit my role so it is above the roles you want me to be able to manage! I also need nickname and role permissions! Finally, the server owner needs to type "!setchat" in the text chat you want this bot to use'))
 
 
 client.loop.create_task(titleUpdater()) #creates a task to update the 'playing' status
 client.run(getAuth()) #runs the client using the Discord bot token in the file 'key.txt'
+
+
+'''if not os.path.exists('servers/' + server_id): #checks if a directory already exists for the server, if not it will create a new one
+        os.makedirs('servers/' + server_id)
+
+    fileExport = open('servers/' + server_id + '/' + member.id, 'wb') #opens a new file in the sever directory for the member (binary for nicknames)
+    fileExport.write((nickname + '\n' + str(strRoles)).encode('UTF-8')) #outputs the nickname and list of roles to the file, using UTF-8 encoding for speciaist characters
+    fileExport.close() #closes the file'''
