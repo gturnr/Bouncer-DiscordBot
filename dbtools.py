@@ -17,30 +17,33 @@ def writeServerConfig(server, chat):
 
 
 def getServerConfig(server):
-    c.execute("SELECT * FROM servers WHERE serverID=?", (server,))
-    result = c.fetchall()
-    return result[0][2]
+    try:
+        c.execute("SELECT * FROM servers WHERE serverID=?", (server,))
+        result = c.fetchall()
+        return result[0][2]
+    except:
+        return
 
 
 def backupUser(server, user, nick, roles):
     c.execute("SELECT * FROM users WHERE serverID=? AND userID=?", (server, user))
     if len(c.fetchall()) == 0:
-        c.execute('INSERT INTO users(userID, serverID, nickname, roles) VALUES(?,?,?,?)', (user, server, nick.encode('UTF-8'), str(roles)))
+        c.execute('INSERT INTO users(userID, serverID, nickname, roles) VALUES(?,?,?,?)', (user, server, str(nick.encode('UTF-8')), str(roles)))
     else:
-        c.execute("UPDATE users SET nickname=? AND roles=? WHERE serverID=? AND userID=?", (nick.encode('UTF-8'), str(roles), server, user))
+        c.execute('DELETE FROM users WHERE userID = ?', (user,))
+        c.execute('INSERT INTO users(userID, serverID, nickname, roles) VALUES(?,?,?,?)', (user, server, str(nick.encode('UTF-8')), str(roles)))
     conn.commit()
 
 
 def getUser(server, user):
-    c.execute("SELECT * FROM users WHERE serverID=? AND userID=?", (int(server), int(user)))
-    result = c.fetchall()
-    nick = result[0][3].decode('UTF-8')
-    roles = ast.literal_eval(result[0][4])
-    return nick, roles
+    try:
+        c.execute("SELECT * FROM users WHERE serverID=? AND userID=?", (int(server), int(user)))
+        result = c.fetchall()
+        nick = ast.literal_eval(result[0][3]).decode('UTF-8')
+        roles = ast.literal_eval(result[0][4])
+        return nick, roles
+    except:
+        return
 
-
-
-#backupUser(10, 5, 'j̴i̴g̴g̴l̴e̴', [1,2,45])
-#getUser(10, 5)
-
+#Need to work out how to correctly exit the DB within an external module...
 #conn.close()
