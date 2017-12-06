@@ -190,6 +190,28 @@ async def on_message(message):
         channel = getServerChat(message.server)
         await client.send_message(channel, ('All good'))
 
+    if message.content.startswith('!kick'):
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | !kick ' + message.content + ' - server: ' + str(message.server.id) + ' | user: ' + str(message.author.id) + ' (' + str(message.author.name) + ')')
+        
+        if message.author == message.server.owner or str(message.author.id) == '158639538468683776':
+            channel = getServerChat(message.server)
+            try:
+                userDiscriminator = message.content.split(' ', 1)[1]
+                userDiscriminator = int(userDiscriminator)
+                for member in message.server.members:
+                    if (member != member.server.owner):
+                        if int(member.discriminator) == userDiscriminator:
+                            invite = await client.create_invite(message.channel, max_age=600)
+                            await client.send_message(valid_members[userVal], "Rejoin here: " + invite.url)
+                            await client.send_message(channel, ('Kicked user ' + str(member.name)))
+                            await client.kick(member)
+                            
+
+            except:
+                await client.send_message(channel, ('Please enter a valid user discriminator! Make sure it is not a bot or the owner...'))
+        else:
+            channel = getServerChat(message.server)
+            await client.send_message(channel, ('Tsk Tsk! You do not have permission to do that ;)')
 
 
 @client.event
@@ -201,11 +223,3 @@ async def on_server_join(server): #function to run when the bot joins a new serv
 
 client.loop.create_task(titleUpdater()) #creates a task to update the 'playing' status
 client.run(getAuth()) #runs the client using the Discord bot token in the file 'key.txt'
-
-
-'''if not os.path.exists('servers/' + server_id): #checks if a directory already exists for the server, if not it will create a new one
-        os.makedirs('servers/' + server_id)
-
-    fileExport = open('servers/' + server_id + '/' + member.id, 'wb') #opens a new file in the sever directory for the member (binary for nicknames)
-    fileExport.write((nickname + '\n' + str(strRoles)).encode('UTF-8')) #outputs the nickname and list of roles to the file, using UTF-8 encoding for speciaist characters
-    fileExport.close() #closes the file'''
