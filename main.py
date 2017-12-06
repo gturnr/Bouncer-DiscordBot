@@ -199,7 +199,7 @@ async def on_message(message):
                 userDiscriminator = message.content.split(' ', 1)[1]
                 userDiscriminator = int(userDiscriminator)
                 for member in message.server.members:
-                    if (member != member.server.owner):
+                    if member.bot != True and (member != member.server.owner):
                         if int(member.discriminator) == userDiscriminator:
                             invite = await client.create_invite(message.channel, max_age=600)
                             await client.send_message(member, "Rejoin here: " + invite.url)
