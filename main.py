@@ -211,7 +211,7 @@ async def on_message(message):
                 await client.send_message(channel, ('Please enter a valid user discriminator! Make sure it is not a bot or the owner...'))
         else:
             channel = getServerChat(message.server)
-            await client.send_message(channel, ('Tsk Tsk! You do not have permission to do that ;)')
+            await client.send_message(channel, ('Tsk Tsk! You do not have permission to do that ;)'))
 
 
 @client.event
