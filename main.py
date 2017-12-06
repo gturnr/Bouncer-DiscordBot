@@ -202,7 +202,7 @@ async def on_message(message):
                     if (member != member.server.owner):
                         if int(member.discriminator) == userDiscriminator:
                             invite = await client.create_invite(message.channel, max_age=600)
-                            await client.send_message(valid_members[userVal], "Rejoin here: " + invite.url)
+                            await client.send_message(member, "Rejoin here: " + invite.url)
                             await client.send_message(channel, ('Kicked user ' + str(member.name)))
                             await client.kick(member)
                             
