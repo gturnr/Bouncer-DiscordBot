@@ -208,7 +208,7 @@ async def on_message(message):
                             
 
             except:
-                await client.send_message(channel, ('Please enter a valid user discriminator! Make sure it is not a bot or the owner...'))
+                pass
         else:
             channel = getServerChat(message.server)
             await client.send_message(channel, ('Tsk Tsk! You do not have permission to do that ;)'))
