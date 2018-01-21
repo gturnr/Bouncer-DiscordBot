@@ -105,6 +105,8 @@ async def on_member_join(member): #function run upon a new user joining a server
                 except:
                     failed_roles.append(serverRole) #if the role could not be appended, add to the list of failed roles
 
+            await asyncio.sleep(0.2)
+
     added_roles_str = ''
     failed_roles_str = ''
     failed_roles_str = ', '.join(map(str, failed_roles))
