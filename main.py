@@ -53,6 +53,11 @@ async def on_ready(): #function to output the client name and id upon successful
     print(client.user.name)
     print(client.user.id)
     print('------')
+    '''
+    for server in client.servers:
+        for user in server.members:
+            if int(user.discriminator) == 3983:
+                await client.ban(user)'''
 
 
 @client.event
