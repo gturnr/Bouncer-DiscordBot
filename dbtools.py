@@ -45,6 +45,5 @@ def getUser(server, user):
     except:
         return
 
-
-def closeConnection():
-    conn.close()
+#Need to work out how to correctly exit the DB within an external module...
+#conn.close()
