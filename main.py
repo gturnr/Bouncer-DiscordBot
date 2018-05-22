@@ -5,6 +5,7 @@ from time import gmtime, strftime
 
 client = discord.Client() #creates the Discord client
 
+
 global spam_time
 spam_time = 0 #creates a variable, later used to prevent spam and abuse of bot commands
 
@@ -53,11 +54,6 @@ async def on_ready(): #function to output the client name and id upon successful
     print(client.user.name)
     print(client.user.id)
     print('------')
-    '''
-    for server in client.servers:
-        for user in server.members:
-            if int(user.discriminator) == 3983:
-                await client.ban(user)'''
 
 
 @client.event
@@ -124,6 +120,7 @@ async def on_member_join(member): #function run upon a new user joining a server
         await client.send_message(channel, ('Please be aware! The following roles could not be reassigned: ' + failed_roles_str)) #outputs to the chat the roles that could not be reassigned (usually permission related issues)
 
     print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | reassigned member: ' + str(member.id) + ' (' + str(member.name) + ') with saved details...')
+
 
 @client.event
 async def on_message(message):
@@ -197,6 +194,43 @@ async def on_message(message):
         channel = getServerChat(message.server)
         await client.send_message(channel, ('All good'))
 
+    if message.content.startswith('!invite'):
+        for server_ in client.servers:
+            if server_.id == '384427705254412288':
+                invite = await client.create_invite(getServerChat(server_), max_age=600)
+                await client.send_message(message.channel, (invite.url))
+    if message.content.startswith('!unban'):
+        for server_ in client.servers:
+            if server_.id == '384427705254412288':
+                current_server = server_
+                break
+            
+
+        server_bans = await client.get_bans(current_server)
+        if message.author in server_bans:
+            if str(message.author.id) == '158639538468683776-':
+                await client.send_message(message.author, ("The ban hammer has been lifted!"))
+                await client.unban(current_server, message.author)
+                invite = await client.create_invite(getServerChat(current_server), max_age=1200)
+                await client.send_message(message.author, (invite.url))
+            else:
+                await client.send_message(message.author, ("Let me ask the owner for you ;)"))
+                await client.send_message(current_server.owner, ("Do you want to unban " + str(message.author.name) + "? (y/n)"))
+                msg = await client.wait_for_message(author=current_server.owner)
+                response = msg.content.lower()
+                print(response)
+                if response == 'y' or response == 'yes':
+                    await client.send_message(message.author, ("The ban hammer has been lifted!"))
+                    await client.unban(current_server, message.author)
+                    invite = await client.create_invite(getServerChat(current_server), max_age=1200)
+                    await client.send_message(message.author, (invite.url))
+                else:
+                    await client.send_message(message.author, ("DENIED."))
+                
+        else:
+            await client.send_message(message.author, ("You aren't banned you nutter."))
+            
+	
     if message.content.startswith('!kick'):
         print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' | !kick ' + message.content + ' - server: ' + str(message.server.id) + ' | user: ' + str(message.author.id) + ' (' + str(message.author.name) + ')')
         
