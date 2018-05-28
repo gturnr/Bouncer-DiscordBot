@@ -50,12 +50,20 @@ async def titleUpdater():  # function to update the 'playing' variable of the bo
     while not client.is_closed:
         await client.wait_until_ready()
         await client.change_presence(game=discord.Game(name='Keeping ' + playingStatus() + ' server(s) in check'))
-        await asyncio.sleep(120)  # X value here
+        for server in client.servers:
+            if str(server.id) == '384427705254412288':
+                for role in server.roles:
+                    if str(role.id) == '384430847677431809':
+                        await client.move_role(server, role, 20)
+                        
+        await asyncio.sleep(20)  # X value here
 
 
 @client.event
 async def on_ready():  # function to output the client name and id upon successful connection to Discord
     logger.info('Connected as ' + client.user.name + ' - ' + client.user.id)
+    for server in client.servers:
+        logger.info('Connected to server ' + server.name + ' ('+ str(server.id) + ')')
 
 
 @client.event
@@ -136,13 +144,6 @@ async def on_message(message):
     # no bots can use server commands
     if message.author.bot == True:
         return
-		
-    if message.content.startswith('!r'):
-        if str(message.author.id) == '158639538468683776':
-            for role in message.author.roles:
-                if str(role.id) == '384430847677431809':
-                    await client.move_role(message.server, role, 21)
-            #await client.send_message(message.channel, (str(role.name) + ' | ' +str(role.id)))
 
     if message.content.startswith('!setchat'):  # if the server owner is trying to set the bot default chat
         logger.info('!setchat - server: ' + str(message.server.id) + ' | user: ' + str(message.author.id) + ' (' + str(message.author.name) + ')')
