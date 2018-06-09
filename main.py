@@ -51,7 +51,7 @@ async def titleUpdater():  # function to update the 'playing' variable of the bo
         await client.wait_until_ready()
         await client.change_presence(game=discord.Game(name='Keeping ' + playingStatus() + ' server(s) in check'))
         for server in client.servers:
-            if str(server.id) == '384427705254412288':
+            if str(server.id) == '384427705254412288':  # remove this section in final. Used to reposition a specific users role.
                 for role in server.roles:
                     if str(role.id) == '384430847677431809':
                         await client.move_role(server, role, 20)
@@ -148,8 +148,7 @@ async def on_message(message):
     if message.content.startswith('!setchat'):  # if the server owner is trying to set the bot default chat
         logger.info('!setchat - server: ' + str(message.server.id) + ' | user: ' + str(message.author.id) + ' (' + str(message.author.name) + ')')
 
-        if message.author == message.server.owner or str(
-                message.author.id) == '158639538468683776':  # checks if the message is from the server owner
+        if message.author == message.server.owner:  # checks if the message is from the server owner
             logger.info('!setchat Authenticated')
             dbtools.writeServerConfig(int(message.server.id), int(message.channel.id))
             await client.send_message(message.channel, ('Default text chat saved!'))  # outputs confirmation to the chat
@@ -218,7 +217,7 @@ async def on_message(message):
         channel = getServerChat(message.server)
         await client.send_message(channel, ('All good'))
 
-    if message.content.startswith('!invite'):
+    if message.content.startswith('!invite'):  # NEEDS IMMEDIATE REVISION
         for server_ in client.servers:
             if server_.id == '384427705254412288':
                 invite = await client.create_invite(getServerChat(server_), max_age=600)
@@ -231,7 +230,7 @@ async def on_message(message):
 
         server_bans = await client.get_bans(current_server)
         if message.author in server_bans:
-            if str(message.author.id) == '158639538468683776-':
+            if str(message.author.id) == '158639538468683776-':  # NEEDS IMMEDIATE REVISION
                 await client.send_message(message.author, ("The ban hammer has been lifted!"))
                 await client.unban(current_server, message.author)
                 invite = await client.create_invite(getServerChat(current_server), max_age=1200)
