@@ -24,7 +24,7 @@ Current list of bot commands
 | ------ | ---- | ---- |
 | !setchat | Saves the default chat for the server | Can only be run by the server owner | 
 | !russianroulette | Randomly kicks a member from a voice channel | Any member in a voice channel, limited to every 60 seconds |
-| !unban | IN DEVELOPMENT: allows a kicked user to ask the owner to unban them | kicked user |
+| !unban | Allows a kicked user to ask the owner to unban them | kicked user |
 | !kick | Kicks a user in the server (eg !kick 3245) | Can only be run by the server owner |
-| !testchat | Validates that setchat worked correctly | Anyone |
-| !update | IN DEVELOPMENT: used to put the latest git commit of the bot and restart | Bot owner |
+| !testchat | Validates that setchat worked correctly | server owner |
+| !update | used to put the latest git commit of the bot and restart | Bot owner |
