@@ -13,14 +13,14 @@ conn = psycopg2.connect(
             )
 
 c = conn.cursor()
-c.execute('CREATE TABLE IF NOT EXISTS servers (id INTEGER PRIMARY KEY, serverID INT, chatID INT)')
-c.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userID INT, serverID INT, nickname TEXT, roles TEXT)')
-
+c.execute('''CREATE TABLE IF NOT EXISTS servers (id INTEGER PRIMARY KEY, serverID INT, chatID INT)''')
+c.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userID INT, serverID INT, nickname TEXT, roles TEXT)''')
+conn.commit()
 
 def writeServerConfig(server, chat):
-    c.execute("SELECT * FROM servers WHERE serverID=?", (server,))
+    c.execute("SELECT * FROM servers WHERE serverID=?", (int(server),))
     if len(c.fetchall()) == 0:
-        c.execute('INSERT INTO servers(serverID, chatID) VALUES(?,?)', (server, chat))
+        c.execute('INSERT INTO servers(serverID, chatID) VALUES(?,?)', (int(server), int(chat)))
     else:
         c.execute("UPDATE servers SET chatID = ? WHERE serverID = ?", (chat, server))
     conn.commit()
