@@ -2,6 +2,8 @@
 import ast, os, psycopg2
 import urllib.parse as urlparse
 global c, conn
+c = None
+conn = None
 
 def init(DB_URL):
     #conn = sqlite3.connect('bouncerData.db')  ## LEGACY FOR LOCAL INSTALLATION
