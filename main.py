@@ -116,36 +116,21 @@ async def on_member_join(member):  # function run upon a new user joining a serv
         nickname, roles = dbtools.getUser(member.guild.id, member.id)
 
     except:  # if there were no saved member config then the function exits
-        logger.info('No saved details for new user')
+        logger.info('No saved details for new member: ' + str(member.id) + ' (' + str(member.name) + '))
         return
 
-    await client.change_nickname(member, nickname)  # changes the member nickname
-    added_roles = []  # list for successful roles
-    failed_roles = []  # list for failed roles
+    role_objs = []  # list of role objs
+
     for role in roles:  # loops through every role in the list roles (from config file)
         for guildRole in member.guild.roles:  # loops through every role in the server, to append a role to the user you need the role object (not just the id)
             if str(guildRole.id) == role:  # if the server role is matching then attempt to append the role to the user
-                try:
-                    await client.add_roles(member, guildRole)
-                    added_roles.append(guildRole)  # adds the role to the list of successful roles
-                except:
-                    failed_roles.append(
-                        guildRole)  # if the role could not be appended, add to the list of failed roles
+                role_objs.append(guildRole)  # adds the role to the list of successful roles
+    role_objs_str = ', '.join(map(str, role_objs))
 
-            await asyncio.sleep(0.2)
+    await member.edit(nick=nickname, roles=role_objs)  # changes the member nickname
 
-    added_roles_str = ''
-    failed_roles_str = ''
-    failed_roles_str = ', '.join(map(str, failed_roles))
-    added_roles_str = ', '.join(map(str, added_roles))
-
-    if len(added_roles) != 0:  # if there is at least one entry in the list
-        await channel.send(
-                    'Member ' + member.name + ' has been reassigned roles: ' + added_roles_str)  # outputs to the chat the roles that have been reassigned
-
-    if len(failed_roles) != 0:  # if there is at least one entry in the list
-        await channel.send(
-                    'Please be aware! The following roles could not be reassigned: ' + failed_roles_str)  # outputs to the chat the roles that could not be reassigned (usually permission related issues)
+    if len(role_objs) != 0:  # if there is at least one entry in the list
+        await channel.send('Member ' + member.name + ' has been reassigned roles: ' + role_objs_str)  # outputs to the chat the roles that have been reassigned
 
     logger.info('reassigned member: ' + str(member.id) + ' (' + str(member.name) + ') with saved details')
 
