@@ -168,7 +168,7 @@ async def on_message(message):
         if difference > 30:  # change this value to change the time limit (seconds)
             spam_time = time.time()
 
-            voice_channel = message.author.voice.voice_channel  # gets the host voice channel
+            voice_channel = message.author.voice.channel  # gets the host voice channel
             if voice_channel is None:
                 await message.channel.send("You can only run this command when in a voice channel!")
 
@@ -183,13 +183,14 @@ async def on_message(message):
                 for member in all_members:
                     if member.bot != True and (
                             member != member.guild.owner):  # checks the member is not a bot and is not the server owner
-                        if member.voice.voice_channel == voice_channel:  # checks if the member is in the voice channel of the host
+                        if member.voice.channel == voice_channel:  # checks if the member is in the voice channel of the host
                             valid_members.append(member)
 
                 userVal = random.randint(0, len(valid_members) - 1)  # picks a random member
                 await message.channel.send("Bad luck " + valid_members[userVal].name)
                 await valid_members[userVal].send("Bad luck! rejoin here: " + invite.url)  # DMs the member a sever invite
-                await client.kick(valid_members[userVal])  # kicks the member from the server
+                await message.guild.kick(valid_members[userVal])  # kicks the member from the server
+
 
         else:
             await message.channel.send("Please wait before running this command again!")
