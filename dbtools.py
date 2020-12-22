@@ -1,7 +1,5 @@
 # import sqlite3  ## LEGACY FOR LOCAL INSTALLATION
-import ast, os
-if not 'HEROKU' in os.environ:  # only import if local
-    import psycopg2
+import ast, os, psycopg2
 
 global c, conn
 
