@@ -13,8 +13,8 @@ conn = psycopg2.connect(
             )
 
 c = conn.cursor()
-c.execute('''CREATE TABLE IF NOT EXISTS servers (id INTEGER PRIMARY KEY, serverID INT, chatID INT)''')
-c.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userID INT, serverID INT, nickname TEXT, roles TEXT)''')
+c.execute('''CREATE TABLE IF NOT EXISTS servers (id INTEGER PRIMARY KEY, serverID BIGINT, chatID BIGINT)''')
+c.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userID BIGINT, serverID BIGINT, nickname TEXT, roles TEXT)''')
 conn.commit()
 
 def writeServerConfig(server, chat):
