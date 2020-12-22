@@ -16,7 +16,12 @@ else:  # if running locally save to file
     discord_logger = log_config.setup_logger('discord', True,'discordpy.log')
     logger = log_config.setup_logger('bouncer', True, 'bouncer.log', logging.INFO, logging.INFO)
 
-client = discord.Client()  # creates the Discord client
+# define intents
+intents = discord.Intents.default()
+intents.members = True
+
+
+client = discord.Client(intents=intents)  # creates the Discord client
 
 global spam_time
 spam_time = 0  # creates a variable, later used to prevent spam and abuse of bot commands
@@ -75,7 +80,7 @@ async def on_ready():  # function to output the client name and id upon successf
 
 
 @client.event
-async def on_member_remove(member):  # function to run when a member keaves or is removed from a server
+async def on_member_remove(member):  # function to run when a member eaves or is removed from a server
     logger.info('member: ' + str(member.id) + ' (' + str(member.name) + ') left guild: ' + str(member.guild.id))
 
     if member == client.user:
