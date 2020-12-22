@@ -18,17 +18,17 @@ c.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userID IN
 conn.commit()
 
 def writeServerConfig(server, chat):
-    c.execute("SELECT * FROM servers WHERE serverID=?", (int(server),))
+    c.execute("SELECT * FROM servers WHERE serverID = %s", (int(server)))
     if len(c.fetchall()) == 0:
-        c.execute('INSERT INTO servers(serverID, chatID) VALUES(?,?)', (int(server), int(chat)))
+        c.execute('INSERT INTO servers(serverID, chatID) VALUES(%s,%s)', (int(server), int(chat)))
     else:
-        c.execute("UPDATE servers SET chatID = ? WHERE serverID = ?", (chat, server))
+        c.execute("UPDATE servers SET chatID = %s WHERE serverID = %s", (chat, server))
     conn.commit()
 
 
 def getServerConfig(server):
     try:
-        c.execute("SELECT * FROM servers WHERE serverID=?", (server,))
+        c.execute("SELECT * FROM servers WHERE serverID=%s", (server))
         result = c.fetchall()
         return result[0][2]
     except:
@@ -36,18 +36,18 @@ def getServerConfig(server):
 
 
 def backupUser(server, user, nick, roles):
-    c.execute("SELECT * FROM users WHERE serverID=? AND userID=?", (server, user))
+    c.execute("SELECT * FROM users WHERE serverID=%s AND userID=%s", (server, user))
     if len(c.fetchall()) == 0:
-        c.execute('INSERT INTO users(userID, serverID, nickname, roles) VALUES(?,?,?,?)', (user, server, str(nick.encode('UTF-8')), str(roles)))
+        c.execute('INSERT INTO users(userID, serverID, nickname, roles) VALUES(%s,%s,%s,%s)', (user, server, str(nick.encode('UTF-8')), str(roles)))
     else:
-        c.execute('DELETE FROM users WHERE userID = ?', (user,))
-        c.execute('INSERT INTO users(userID, serverID, nickname, roles) VALUES(?,?,?,?)', (user, server, str(nick.encode('UTF-8')), str(roles)))
+        c.execute('DELETE FROM users WHERE userID = %s', (user,))
+        c.execute('INSERT INTO users(userID, serverID, nickname, roles) VALUES(%s,%s,%s,%s)', (user, server, str(nick.encode('UTF-8')), str(roles)))
     conn.commit()
 
 
 def getUser(server, user):
     try:
-        c.execute("SELECT * FROM users WHERE serverID=? AND userID=?", (int(server), int(user)))
+        c.execute("SELECT * FROM users WHERE serverID=%s AND userID=%s", (int(server), int(user)))
         result = c.fetchall()
         nick = ast.literal_eval(result[0][3]).decode('UTF-8')
         roles = ast.literal_eval(result[0][4])
