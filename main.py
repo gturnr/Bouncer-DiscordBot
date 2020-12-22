@@ -17,10 +17,7 @@ else:  # if running locally save to file
     logger = log_config.setup_logger('bouncer', True, 'bouncer.log', logging.INFO, logging.INFO)
 
 # define intents
-intents = discord.Intents.default()
-intents.members = True
-
-
+intents = discord.Intents.all()
 client = discord.Client(intents=intents)  # creates the Discord client
 
 global spam_time
