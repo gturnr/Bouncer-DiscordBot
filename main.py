@@ -8,8 +8,15 @@ import log_config
 load_dotenv()
 
 # logger configuration
-discord_logger = log_config.setup_logger('discord', 'discordpy.log')
-logger = log_config.setup_logger('bouncer', 'bouncer.log', logging.INFO, logging.INFO)
+if 'HEROKU' in os.environ:  # check if running Heroku for stdout logging
+    discord_logger = log_config.setup_logger('discord', False)
+    logger = log_config.setup_logger('bouncer', False, console_level=logging.INFO)
+else:  # if running locally save to file
+    discord_logger = log_config.setup_logger('discord', True,'discordpy.log')
+    logger = log_config.setup_logger('bouncer', True, 'bouncer.log', logging.INFO, logging.INFO)
+
+# connect to database
+dbtools.init(os.getenv('DATABASE_URL'))
 
 client = discord.Client()  # creates the Discord client
 

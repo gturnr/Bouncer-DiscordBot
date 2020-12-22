@@ -1,10 +1,17 @@
-import sqlite3, ast
+# import sqlite3  ## LEGACY FOR LOCAL INSTALLATION
+import ast, os
+if not 'HEROKU' in os.environ:  # only import if local
+    import psycopg2
 
 global c, conn
-conn = sqlite3.connect('bouncerData.db')
-c = conn.cursor()
-c.execute('CREATE TABLE IF NOT EXISTS servers (id INTEGER PRIMARY KEY, serverID INT, chatID INT)')
-c.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userID INT, serverID INT, nickname TEXT, roles TEXT)')
+
+def init(DB_URL):
+    #conn = sqlite3.connect('bouncerData.db')  ## LEGACY FOR LOCAL INSTALLATION
+    con = psycopg2.connect(database="postgres", host=DB_URL, port="5432")
+
+    c = conn.cursor()
+    c.execute('CREATE TABLE IF NOT EXISTS servers (id INTEGER PRIMARY KEY, serverID INT, chatID INT)')
+    c.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userID INT, serverID INT, nickname TEXT, roles TEXT)')
 
 
 def writeServerConfig(server, chat):
