@@ -1,6 +1,6 @@
 # import sqlite3  ## LEGACY FOR LOCAL INSTALLATION
 import ast, os, psycopg2
-
+import urllib.parse as urlparse
 global c, conn
 
 def init(DB_URL):
