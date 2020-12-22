@@ -1,9 +1,13 @@
 #!python3.6
 import discord, asyncio, os, ast, random, time, logging
+from dotenv import load_dotenv  # load config variables
 import dbtools
 from time import gmtime, strftime
 import log_config
 
+load_dotenv()
+
+# logger configuration
 discord_logger = log_config.setup_logger('discord', 'discordpy.log')
 logger = log_config.setup_logger('bouncer', 'bouncer.log', logging.INFO, logging.INFO)
 
@@ -19,16 +23,13 @@ def playingStatus():  # function to return the number of servers that the bot is
 
 
 def getAuth():  # opens a text file and loads the disocrd private key from it
-    try:
-        file = open('key.txt')
-        key = file.readline()
-        file.close()
-        return key
-    except:  # if the file could not be opened, exits to prevent a non-authorised attempt at connecting to discord
-        print('Failed to load key file... create a text file called "key.txt" with your auth key')
+    TOKEN = os.getenv('DISCORD_TOKEN')
+    if TOKEN is None:
+        print('Failed to load API TOKEN. Set Bot Token to Env variable DISCORD_TOKEN')
         logger.critical('No key file. exiting...')
         exit()
-
+    else:
+        return TOKEN
 
 def getServerChat(guild):  # function to recall the preffered server channel from local file storage
     try:

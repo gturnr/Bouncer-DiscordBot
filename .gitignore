@@ -1,8 +1,6 @@
-config/
-servers/
-
+## Application specific
+.env
 bouncerData.db
-key.txt
 bouncer.log
 discordpy.log
 
