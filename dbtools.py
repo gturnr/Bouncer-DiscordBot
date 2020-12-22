@@ -5,7 +5,20 @@ global c, conn
 
 def init(DB_URL):
     #conn = sqlite3.connect('bouncerData.db')  ## LEGACY FOR LOCAL INSTALLATION
-    conn = psycopg2.connect(database="postgres", host=DB_URL, port="5432")
+    url = urlparse.urlparse(os.environ['DATABASE_URL'])
+    dbname = url.path[1:]
+    user = url.username
+    password = url.password
+    host = url.hostname
+    port = url.port
+
+    conn = psycopg2.connect(
+                dbname=dbname,
+                user=user,
+                password=password,
+                host=host,
+                port=port
+                )
 
     c = conn.cursor()
     c.execute('CREATE TABLE IF NOT EXISTS servers (id INTEGER PRIMARY KEY, serverID INT, chatID INT)')
