@@ -9,6 +9,7 @@ load_dotenv()
 
 # logger configuration
 if 'HEROKU' in os.environ:  # check if running Heroku for stdout logging
+    print('Detected Heroku')
     discord_logger = log_config.setup_logger('discord', False)
     logger = log_config.setup_logger('bouncer', False, console_level=logging.INFO)
 else:  # if running locally save to file
