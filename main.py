@@ -116,7 +116,7 @@ async def on_member_join(member):  # function run upon a new user joining a serv
         nickname, roles = dbtools.getUser(member.guild.id, member.id)
 
     except:  # if there were no saved member config then the function exits
-        logger.info('No saved details for new member: ' + str(member.id) + ' (' + str(member.name) + '))
+        logger.info('No saved details for new member: ' + str(member.id) + ' (' + str(member.name) + ')')
         return
 
     role_objs = []  # list of role objs
