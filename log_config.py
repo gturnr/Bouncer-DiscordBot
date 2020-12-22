@@ -11,7 +11,6 @@ def setup_logger(name, file_based=True, log_file='log.txt', level=logging.INFO, 
         handler = logging.FileHandler(log_file, encoding='utf-8', mode='a')
         handler.setFormatter(formatter)
         handler.setLevel(logging.INFO)
-
         logger.addHandler(handler)
 
     console_handler = logging.StreamHandler()

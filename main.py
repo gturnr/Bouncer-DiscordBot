@@ -16,9 +16,6 @@ else:  # if running locally save to file
     discord_logger = log_config.setup_logger('discord', True,'discordpy.log')
     logger = log_config.setup_logger('bouncer', True, 'bouncer.log', logging.INFO, logging.INFO)
 
-# connect to database
-dbtools.init(os.getenv('DATABASE_URL'))
-
 client = discord.Client()  # creates the Discord client
 
 global spam_time

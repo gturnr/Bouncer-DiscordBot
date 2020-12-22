@@ -2,29 +2,19 @@
 import ast, os, psycopg2
 import urllib.parse as urlparse
 global c, conn
-c = None
-conn = None
 
-def init(DB_URL):
-    #conn = sqlite3.connect('bouncerData.db')  ## LEGACY FOR LOCAL INSTALLATION
-    url = urlparse.urlparse(os.environ['DATABASE_URL'])
-    dbname = url.path[1:]
-    user = url.username
-    password = url.password
-    host = url.hostname
-    port = url.port
+url = urlparse.urlparse(os.getenv('DATABASE_URL'))
+conn = psycopg2.connect(
+            dbname=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+            )
 
-    conn = psycopg2.connect(
-                dbname=dbname,
-                user=user,
-                password=password,
-                host=host,
-                port=port
-                )
-
-    c = conn.cursor()
-    c.execute('CREATE TABLE IF NOT EXISTS servers (id INTEGER PRIMARY KEY, serverID INT, chatID INT)')
-    c.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userID INT, serverID INT, nickname TEXT, roles TEXT)')
+c = conn.cursor()
+c.execute('CREATE TABLE IF NOT EXISTS servers (id INTEGER PRIMARY KEY, serverID INT, chatID INT)')
+c.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userID INT, serverID INT, nickname TEXT, roles TEXT)')
 
 
 def writeServerConfig(server, chat):
